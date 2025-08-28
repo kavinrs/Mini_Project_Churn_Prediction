@@ -1,5 +1,5 @@
 """
-WSGI config for Churn project.
+WSGI config for churn project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Churn.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'churn.settings')
 
 application = get_wsgi_application()
