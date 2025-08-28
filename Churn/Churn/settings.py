@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'churnapp',  # Your new app
     'rest_framework',  # Django REST Framework
+    'corsheaders',  # For handling CORS
 ]
 
 MIDDLEWARE = [
@@ -49,7 +50,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware
 ]
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins for simplicity; adjust for production
 
 ROOT_URLCONF = 'churn.urls'
 
