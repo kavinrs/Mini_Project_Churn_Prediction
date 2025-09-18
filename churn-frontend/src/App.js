@@ -30,6 +30,7 @@ import Dashboard from './Dashboard';
 import CustomerSegmentation from './CustomerSegmentation';
 import AlertsDashboard from './AlertsDashboard';
 import GamifiedRetention from './GamifiedRetention';
+import RealTimeWatchlist from './RealTimeWatchlist';
 
 function App() {
   const [activeTab, setActiveTab] = useState('predictor');
@@ -144,6 +145,23 @@ function App() {
         >
           🎮 Gamified Retention
         </button>
+        
+        <button
+          style={tabStyle(activeTab === 'watchlist')}
+          onClick={() => setActiveTab('watchlist')}
+          onMouseOver={(e) => {
+            if (activeTab !== 'watchlist') {
+              e.target.style.backgroundColor = '#e9ecef';
+            }
+          }}
+          onMouseOut={(e) => {
+            if (activeTab !== 'watchlist') {
+              e.target.style.backgroundColor = '#f8f9fa';
+            }
+          }}
+        >
+          🔍 Real-Time Watchlist
+        </button>
       </div>
 
       {/* Content Area */}
@@ -153,6 +171,7 @@ function App() {
         {activeTab === 'segmentation' && <CustomerSegmentation />}
         {activeTab === 'alerts' && <AlertsDashboard />}
         {activeTab === 'gamified' && <GamifiedRetention />}
+        {activeTab === 'watchlist' && <RealTimeWatchlist />}
       </div>
     </div>
   );
