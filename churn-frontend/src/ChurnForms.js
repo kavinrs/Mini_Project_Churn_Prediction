@@ -171,6 +171,186 @@ const ChurnForm = () => {
             </div>
           )}
 
+          {/* Gamified Retention Section */}
+          {predictionData && predictionData.retention_score && (
+            <div style={{ 
+              marginTop: '20px', 
+              padding: '20px', 
+              backgroundColor: '#f8f9fa', 
+              borderRadius: '8px',
+              border: '1px solid #dee2e6'
+            }}>
+              <h3 style={{ 
+                color: '#333', 
+                marginBottom: '15px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                🎮 Gamified Retention Score
+              </h3>
+              
+              {/* Retention Score Display */}
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '20px',
+                marginBottom: '20px'
+              }}>
+                <div style={{ 
+                  fontSize: '3em',
+                  fontWeight: 'bold',
+                  color: predictionData.retention_score.tier_color,
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+                }}>
+                  {predictionData.retention_score.retention_score}
+                </div>
+                <div>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px',
+                    marginBottom: '5px'
+                  }}>
+                    <span style={{ fontSize: '1.5em' }}>
+                      {predictionData.retention_score.tier_icon}
+                    </span>
+                    <span style={{ 
+                      fontSize: '1.2em',
+                      fontWeight: 'bold',
+                      color: predictionData.retention_score.tier_color
+                    }}>
+                      {predictionData.retention_score.score_tier} Tier
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.9em', color: '#666' }}>
+                    Risk Level: {predictionData.retention_score.churn_risk_level}
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  marginBottom: '5px',
+                  fontSize: '0.9em',
+                  color: '#666'
+                }}>
+                  <span>Retention Progress</span>
+                  <span>{predictionData.retention_score.retention_score}%</span>
+                </div>
+                <div style={{ 
+                  width: '100%', 
+                  backgroundColor: '#e9ecef', 
+                  borderRadius: '10px', 
+                  overflow: 'hidden',
+                  height: '20px'
+                }}>
+                  <div
+                    style={{
+                      width: `${predictionData.retention_score.retention_score}%`,
+                      height: '100%',
+                      backgroundColor: predictionData.retention_score.tier_color,
+                      transition: 'width 0.3s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '0.8em',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {predictionData.retention_score.retention_score >= 20 && `${predictionData.retention_score.retention_score}%`}
+                  </div>
+                </div>
+              </div>
+
+              {/* Earned Badges */}
+              {predictionData.earned_badges && predictionData.earned_badges.length > 0 && (
+                <div style={{ marginBottom: '15px' }}>
+                  <h4 style={{ color: '#333', marginBottom: '10px' }}>
+                    🏅 Earned Badges ({predictionData.earned_badges.length})
+                  </h4>
+                  <div style={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: '10px' 
+                  }}>
+                    {predictionData.earned_badges.map((badge, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 12px',
+                          backgroundColor: `${badge.color}20`,
+                          border: `2px solid ${badge.color}`,
+                          borderRadius: '20px',
+                          fontSize: '0.9em',
+                          fontWeight: 'bold'
+                        }}
+                        title={badge.description}
+                      >
+                        <span style={{ fontSize: '1.2em' }}>{badge.icon}</span>
+                        <span>{badge.name}</span>
+                        <span style={{ 
+                          fontSize: '0.8em', 
+                          color: badge.color,
+                          backgroundColor: 'white',
+                          padding: '2px 6px',
+                          borderRadius: '10px'
+                        }}>
+                          {badge.tier}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Achievement Summary */}
+              {predictionData.gamification && (
+                <div style={{ 
+                  padding: '15px',
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  border: '1px solid #dee2e6'
+                }}>
+                  <h4 style={{ color: '#333', marginBottom: '10px' }}>
+                    📊 Achievement Summary
+                  </h4>
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
+                    gap: '15px' 
+                  }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '1.5em', fontWeight: 'bold', color: '#007bff' }}>
+                        {predictionData.gamification.total_badges}
+                      </div>
+                      <div style={{ fontSize: '0.9em', color: '#666' }}>Total Badges</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '1.5em', fontWeight: 'bold', color: '#28a745' }}>
+                        {predictionData.gamification.achievement_level}
+                      </div>
+                      <div style={{ fontSize: '0.9em', color: '#666' }}>Current Level</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '1.5em', fontWeight: 'bold', color: '#ffc107' }}>
+                        {predictionData.gamification.next_milestone === 'Max Level' ? '🏆' : predictionData.gamification.next_milestone}
+                      </div>
+                      <div style={{ fontSize: '0.9em', color: '#666' }}>Next Milestone</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* SHAP Explanation Section */}
           {predictionData && predictionData.explanations && (
             <ShapExplanation 

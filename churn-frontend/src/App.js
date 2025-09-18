@@ -28,6 +28,8 @@ import React, { useState } from 'react';
 import ChurnForm from './ChurnForms';
 import Dashboard from './Dashboard';
 import CustomerSegmentation from './CustomerSegmentation';
+import AlertsDashboard from './AlertsDashboard';
+import GamifiedRetention from './GamifiedRetention';
 
 function App() {
   const [activeTab, setActiveTab] = useState('predictor');
@@ -108,6 +110,40 @@ function App() {
         >
           🎯 Customer Segments
         </button>
+        
+        <button
+          style={tabStyle(activeTab === 'alerts')}
+          onClick={() => setActiveTab('alerts')}
+          onMouseOver={(e) => {
+            if (activeTab !== 'alerts') {
+              e.target.style.backgroundColor = '#e9ecef';
+            }
+          }}
+          onMouseOut={(e) => {
+            if (activeTab !== 'alerts') {
+              e.target.style.backgroundColor = '#f8f9fa';
+            }
+          }}
+        >
+          🚨 Alerts & Notifications
+        </button>
+        
+        <button
+          style={tabStyle(activeTab === 'gamified')}
+          onClick={() => setActiveTab('gamified')}
+          onMouseOver={(e) => {
+            if (activeTab !== 'gamified') {
+              e.target.style.backgroundColor = '#e9ecef';
+            }
+          }}
+          onMouseOut={(e) => {
+            if (activeTab !== 'gamified') {
+              e.target.style.backgroundColor = '#f8f9fa';
+            }
+          }}
+        >
+          🎮 Gamified Retention
+        </button>
       </div>
 
       {/* Content Area */}
@@ -115,6 +151,8 @@ function App() {
         {activeTab === 'predictor' && <ChurnForm />}
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'segmentation' && <CustomerSegmentation />}
+        {activeTab === 'alerts' && <AlertsDashboard />}
+        {activeTab === 'gamified' && <GamifiedRetention />}
       </div>
     </div>
   );
