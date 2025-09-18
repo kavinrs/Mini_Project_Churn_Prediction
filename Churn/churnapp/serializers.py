@@ -1,0 +1,21 @@
+from rest_framework import serializers
+
+class ChurnInputSerializer(serializers.Serializer):
+    Tenure = serializers.FloatField()
+    PreferredLoginDevice = serializers.CharField()
+    CityTier = serializers.IntegerField()
+    WarehouseToHome = serializers.FloatField()
+    PreferredPaymentMode = serializers.CharField()
+    Gender = serializers.CharField()
+    HourSpendOnApp = serializers.FloatField()
+    NumberOfDeviceRegistered = serializers.IntegerField()
+    PreferedOrderCat = serializers.CharField()
+    SatisfactionScore = serializers.IntegerField()
+    MaritalStatus = serializers.CharField()
+    NumberOfAddress = serializers.IntegerField()
+    Complain = serializers.IntegerField()
+    OrderAmountHikeFromlastYear = serializers.FloatField()
+    CouponUsed = serializers.IntegerField()
+    OrderCount = serializers.IntegerField()
+    DaySinceLastOrder = serializers.IntegerField()
+    CashbackAmount = serializers.FloatField()
