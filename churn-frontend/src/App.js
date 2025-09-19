@@ -25,6 +25,11 @@
 // export default App;
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { theme } from './theme';
+import Header from './components/Layout/Header';
+import Navigation from './components/Layout/Navigation';
+import ToastContainer from './components/UI/Toast';
 import ChurnForm from './ChurnForms';
 import Dashboard from './Dashboard';
 import CustomerSegmentation from './CustomerSegmentation';
@@ -35,144 +40,109 @@ import RealTimeWatchlist from './RealTimeWatchlist';
 function App() {
   const [activeTab, setActiveTab] = useState('predictor');
 
-  const tabStyle = (isActive) => ({
-    padding: '12px 24px',
-    margin: '0 5px',
-    backgroundColor: isActive ? '#007bff' : '#f8f9fa',
-    color: isActive ? 'white' : '#333',
-    border: '1px solid #dee2e6',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: isActive ? 'bold' : 'normal',
-    transition: 'all 0.3s ease'
-  });
-
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>
-        Customer Churn Management System
-      </h1>
+    <div style={{ 
+      fontFamily: theme.typography.fontFamily.primary,
+      background: `
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+        linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+      `,
+      minHeight: '100vh',
+      padding: theme.spacing.lg,
+    }}>
+      {/* Professional Header */}
+      <Header />
       
-      {/* Navigation Tabs */}
-      <div style={{ 
-        textAlign: 'center', 
-        marginBottom: '30px',
-        borderBottom: '2px solid #dee2e6',
-        paddingBottom: '15px'
-      }}>
-        <button
-          style={tabStyle(activeTab === 'predictor')}
-          onClick={() => setActiveTab('predictor')}
-          onMouseOver={(e) => {
-            if (activeTab !== 'predictor') {
-              e.target.style.backgroundColor = '#e9ecef';
-            }
-          }}
-          onMouseOut={(e) => {
-            if (activeTab !== 'predictor') {
-              e.target.style.backgroundColor = '#f8f9fa';
-            }
-          }}
-        >
-          🔮 Churn Predictor
-        </button>
-        
-        <button
-          style={tabStyle(activeTab === 'dashboard')}
-          onClick={() => setActiveTab('dashboard')}
-          onMouseOver={(e) => {
-            if (activeTab !== 'dashboard') {
-              e.target.style.backgroundColor = '#e9ecef';
-            }
-          }}
-          onMouseOut={(e) => {
-            if (activeTab !== 'dashboard') {
-              e.target.style.backgroundColor = '#f8f9fa';
-            }
-          }}
-        >
-          📊 Risk Dashboard
-        </button>
-        
-        <button
-          style={tabStyle(activeTab === 'segmentation')}
-          onClick={() => setActiveTab('segmentation')}
-          onMouseOver={(e) => {
-            if (activeTab !== 'segmentation') {
-              e.target.style.backgroundColor = '#e9ecef';
-            }
-          }}
-          onMouseOut={(e) => {
-            if (activeTab !== 'segmentation') {
-              e.target.style.backgroundColor = '#f8f9fa';
-            }
-          }}
-        >
-          🎯 Customer Segments
-        </button>
-        
-        <button
-          style={tabStyle(activeTab === 'alerts')}
-          onClick={() => setActiveTab('alerts')}
-          onMouseOver={(e) => {
-            if (activeTab !== 'alerts') {
-              e.target.style.backgroundColor = '#e9ecef';
-            }
-          }}
-          onMouseOut={(e) => {
-            if (activeTab !== 'alerts') {
-              e.target.style.backgroundColor = '#f8f9fa';
-            }
-          }}
-        >
-          🚨 Alerts & Notifications
-        </button>
-        
-        <button
-          style={tabStyle(activeTab === 'gamified')}
-          onClick={() => setActiveTab('gamified')}
-          onMouseOver={(e) => {
-            if (activeTab !== 'gamified') {
-              e.target.style.backgroundColor = '#e9ecef';
-            }
-          }}
-          onMouseOut={(e) => {
-            if (activeTab !== 'gamified') {
-              e.target.style.backgroundColor = '#f8f9fa';
-            }
-          }}
-        >
-          🎮 Gamified Retention
-        </button>
-        
-        <button
-          style={tabStyle(activeTab === 'watchlist')}
-          onClick={() => setActiveTab('watchlist')}
-          onMouseOver={(e) => {
-            if (activeTab !== 'watchlist') {
-              e.target.style.backgroundColor = '#e9ecef';
-            }
-          }}
-          onMouseOut={(e) => {
-            if (activeTab !== 'watchlist') {
-              e.target.style.backgroundColor = '#f8f9fa';
-            }
-          }}
-        >
-          🔍 Real-Time Watchlist
-        </button>
-      </div>
+      {/* Modern Navigation */}
+      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Content Area */}
-      <div style={{ minHeight: '500px' }}>
-        {activeTab === 'predictor' && <ChurnForm />}
-        {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'segmentation' && <CustomerSegmentation />}
-        {activeTab === 'alerts' && <AlertsDashboard />}
-        {activeTab === 'gamified' && <GamifiedRetention />}
-        {activeTab === 'watchlist' && <RealTimeWatchlist />}
-      </div>
+      {/* Content Area with Glass Morphism and Animation */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+        style={{ 
+          minHeight: '600px',
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: theme.borderRadius['2xl'],
+          padding: theme.spacing.xl,
+          boxShadow: theme.shadows['2xl'],
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+        {/* Subtle background pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.02,
+          backgroundImage: `
+            radial-gradient(circle at 25px 25px, ${theme.colors.primary[500]} 2px, transparent 0),
+            radial-gradient(circle at 75px 75px, ${theme.colors.secondary[500]} 1px, transparent 0)
+          `,
+          backgroundSize: '100px 100px',
+          pointerEvents: 'none',
+        }} />
+        
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            >
+              {activeTab === 'predictor' && <ChurnForm />}
+              {activeTab === 'dashboard' && <Dashboard />}
+              {activeTab === 'segmentation' && <CustomerSegmentation />}
+              {activeTab === 'alerts' && <AlertsDashboard />}
+              {activeTab === 'gamified' && <GamifiedRetention />}
+              {activeTab === 'watchlist' && <RealTimeWatchlist />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* Professional Footer with Animation */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        style={{
+          marginTop: theme.spacing.xl,
+          textAlign: 'center',
+          padding: theme.spacing.lg,
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: theme.borderRadius.xl,
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+        }}>
+        <p style={{
+          margin: 0,
+          color: 'rgba(255, 255, 255, 0.8)',
+          fontSize: theme.typography.fontSize.sm,
+          fontWeight: theme.typography.fontWeight.medium,
+        }}>
+          © 2024 ChurnGuard AI - Advanced Customer Retention Intelligence Platform
+        </p>
+        <p style={{
+          margin: `${theme.spacing.xs} 0 0 0`,
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: theme.typography.fontSize.xs,
+        }}>
+          Powered by Machine Learning & Real-time Analytics
+        </p>
+      </motion.div>
+      
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }

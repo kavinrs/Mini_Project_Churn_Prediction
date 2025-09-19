@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { theme } from './theme';
+import Card from './components/UI/Card';
+import Button from './components/UI/Button';
+import MetricCard from './components/UI/MetricCard';
+import LoadingSpinner from './components/UI/LoadingSpinner';
 
 const AlertsDashboard = () => {
   const [alertsData, setAlertsData] = useState({
@@ -171,228 +176,316 @@ const AlertsDashboard = () => {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>
-        🚨 Churn Alerts & Notifications
-      </h1>
+    <div style={{ padding: '0', fontFamily: theme.typography.fontFamily, background: 'transparent' }}>
+      <Card variant="gradient" padding="large" style={{ textAlign: 'center', marginBottom: theme.spacing.xl }}>
+        <h1 style={{ 
+          margin: '0',
+          fontSize: theme.typography.sizes.xxl,
+          fontWeight: theme.typography.weights.bold,
+          color: theme.colors.text.primary,
+          textShadow: theme.effects.textShadow
+        }}>
+          🚨 Smart Alerts & Notifications
+        </h1>
+        <p style={{
+          margin: `${theme.spacing.md} 0 0 0`,
+          fontSize: theme.typography.sizes.lg,
+          opacity: 0.9,
+          fontWeight: theme.typography.weights.medium,
+          color: theme.colors.text.secondary
+        }}>
+          Real-time churn risk monitoring and intelligent alerting system
+        </p>
+      </Card>
 
       {/* Alert Statistics Cards */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '20px', 
-        marginBottom: '30px' 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+        gap: theme.spacing.xl, 
+        marginBottom: theme.spacing.xl 
       }}>
-        <div style={{ 
-          backgroundColor: '#fff5f5', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          textAlign: 'center',
-          border: '2px solid #fed7d7'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#c53030' }}>Active Alerts</h3>
-          <p style={{ fontSize: '2.5em', margin: '0', color: '#dc3545', fontWeight: 'bold' }}>
-            {alertsData.alertStats.active || 0}
-          </p>
-        </div>
-
-        <div style={{ 
-          backgroundColor: '#fff5f0', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          textAlign: 'center',
-          border: '2px solid #fbd38d'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#c05621' }}>Critical Priority</h3>
-          <p style={{ fontSize: '2.5em', margin: '0', color: '#fd7e14', fontWeight: 'bold' }}>
-            {alertsData.alertStats.critical || 0}
-          </p>
-        </div>
-
-        <div style={{ 
-          backgroundColor: '#fffbf0', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          textAlign: 'center',
-          border: '2px solid #f6e05e'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#b7791f' }}>Acknowledged</h3>
-          <p style={{ fontSize: '2.5em', margin: '0', color: '#ffc107', fontWeight: 'bold' }}>
-            {alertsData.alertStats.acknowledged || 0}
-          </p>
-        </div>
-
-        <div style={{ 
-          backgroundColor: '#f0fff4', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          textAlign: 'center',
-          border: '2px solid #c6f6d5'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#276749' }}>Resolved</h3>
-          <p style={{ fontSize: '2.5em', margin: '0', color: '#28a745', fontWeight: 'bold' }}>
-            {alertsData.alertStats.resolved || 0}
-          </p>
-        </div>
+        <MetricCard
+          title="Active Alerts"
+          value={alertsData.alertStats.active || 0}
+          icon="🚨"
+          trend={null}
+          color={theme.colors.error[500]}
+        />
+        <MetricCard
+          title="Critical"
+          value={alertsData.alertStats.critical || 0}
+          icon="⚠️"
+          trend={null}
+          color={theme.colors.warning[500]}
+        />
+        <MetricCard
+          title="Acknowledged"
+          value={alertsData.alertStats.acknowledged || 0}
+          icon="✅"
+          trend={null}
+          color={theme.colors.info[500]}
+        />
+        <MetricCard
+          title="Resolved"
+          value={alertsData.alertStats.resolved || 0}
+          icon="🎯"
+          trend={null}
+          color={theme.colors.success[500]}
+        />
       </div>
 
       {/* Charts Section */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
-        gap: '30px', 
-        marginBottom: '30px' 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', 
+        gap: theme.spacing.xl, 
+        marginBottom: theme.spacing.xl 
       }}>
         {/* Alerts by Type */}
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          border: '1px solid #dee2e6'
-        }}>
-          <h3 style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
-            Alerts by Type
+        <Card variant="glass" padding="large">
+          <h3 style={{ 
+            marginBottom: theme.spacing.lg, 
+            color: theme.colors.text.primary, 
+            textAlign: 'center', 
+            fontSize: theme.typography.sizes.xl, 
+            fontWeight: theme.typography.weights.bold 
+          }}>
+            📊 Alerts by Type
           </h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={alertsData.alertsByType}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ type, count }) => `${type}: ${count}`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="count"
-              >
-                {alertsData.alertsByType.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+          <div style={{
+            background: theme.colors.background.card,
+            borderRadius: theme.borderRadius.lg,
+            padding: theme.spacing.md,
+            backdropFilter: 'blur(10px)'
+          }}>
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={alertsData.alertsByType}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ type, count }) => `${type}: ${count}`}
+                  outerRadius={90}
+                  innerRadius={30}
+                  fill="#8884d8"
+                  dataKey="count"
+                  stroke={theme.colors.background.primary}
+                  strokeWidth={3}
+                >
+                  {alertsData.alertsByType.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
 
         {/* Alerts by Priority */}
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          border: '1px solid #dee2e6'
-        }}>
-          <h3 style={{ marginBottom: '20px', color: '#333', textAlign: 'center' }}>
-            Alerts by Priority
+        <Card variant="glass" padding="large">
+          <h3 style={{ 
+            marginBottom: theme.spacing.lg, 
+            color: theme.colors.text.primary, 
+            textAlign: 'center', 
+            fontSize: theme.typography.sizes.xl, 
+            fontWeight: theme.typography.weights.bold 
+          }}>
+            🎯 Alerts by Priority
           </h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={alertsData.alertsByPriority}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="priority" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" name="Count">
-                {alertsData.alertsByPriority.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+          <div style={{
+            background: theme.colors.background.card,
+            borderRadius: theme.borderRadius.lg,
+            padding: theme.spacing.md,
+            backdropFilter: 'blur(10px)'
+          }}>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={alertsData.alertsByPriority}>
+                <CartesianGrid strokeDasharray="3 3" stroke={theme.colors.neutral[200]} />
+                <XAxis dataKey="priority" stroke={theme.colors.text.secondary} />
+                <YAxis stroke={theme.colors.text.secondary} />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: theme.colors.background.card,
+                    border: `1px solid ${theme.colors.neutral[200]}`,
+                    borderRadius: theme.borderRadius.md
+                  }}
+                />
+                <Bar dataKey="count" name="Count" radius={[4, 4, 0, 0]}>
+                  {alertsData.alertsByPriority.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
       </div>
 
       {/* Filters */}
-      <div style={{ 
-        backgroundColor: 'white', 
-        padding: '15px', 
-        borderRadius: '8px', 
-        border: '1px solid #dee2e6',
-        marginBottom: '20px',
-        display: 'flex',
-        gap: '15px',
-        alignItems: 'center',
-        flexWrap: 'wrap'
-      }}>
-        <span style={{ fontWeight: 'bold', color: '#333' }}>Filters:</span>
-        
-        <select 
-          value={filterStatus} 
-          onChange={(e) => setFilterStatus(e.target.value)}
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-        >
-          <option value="all">All Status</option>
-          <option value="active">Active</option>
-          <option value="acknowledged">Acknowledged</option>
-          <option value="resolved">Resolved</option>
-        </select>
+      <Card variant="gradient" padding="medium" style={{ marginBottom: theme.spacing.xl }}>
+        <div style={{
+          display: 'flex',
+          gap: theme.spacing.lg,
+          alignItems: 'center',
+          flexWrap: 'wrap'
+        }}>
+          <span style={{ 
+            fontWeight: theme.typography.weights.bold, 
+            color: theme.colors.text.primary, 
+            fontSize: theme.typography.sizes.lg 
+          }}>
+            🔍 Filters:
+          </span>
+          
+          <select 
+            value={filterStatus} 
+            onChange={(e) => setFilterStatus(e.target.value)}
+            style={{ 
+              ...theme.components.input.base,
+              minWidth: '140px'
+            }}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="acknowledged">Acknowledged</option>
+            <option value="resolved">Resolved</option>
+          </select>
 
-        <select 
-          value={filterPriority} 
-          onChange={(e) => setFilterPriority(e.target.value)}
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-        >
-          <option value="all">All Priorities</option>
-          <option value="critical">Critical</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
+          <select 
+            value={filterPriority} 
+            onChange={(e) => setFilterPriority(e.target.value)}
+            style={{ 
+              ...theme.components.input.base,
+              minWidth: '140px'
+            }}
+          >
+            <option value="all">All Priorities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
 
-        <span style={{ marginLeft: 'auto', color: '#666', fontSize: '0.9em' }}>
-          Showing {getFilteredAlerts().length} alerts
-        </span>
-      </div>
+          <span style={{ 
+            marginLeft: 'auto', 
+            color: theme.colors.text.secondary, 
+            fontSize: theme.typography.sizes.base, 
+            fontWeight: theme.typography.weights.medium 
+          }}>
+            Showing {getFilteredAlerts().length} alerts
+          </span>
+        </div>
+      </Card>
 
       {/* Alerts List */}
-      <div style={{ 
-        backgroundColor: 'white', 
-        borderRadius: '8px', 
-        border: '1px solid #dee2e6'
-      }}>
+      <Card variant="glass" padding="none">
         <div style={{ 
-          padding: '20px', 
-          borderBottom: '1px solid #dee2e6',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px 8px 0 0'
+          padding: theme.spacing.xl, 
+          borderBottom: `2px solid ${theme.colors.neutral[200]}`,
+          background: theme.colors.gradients.primary,
+          borderRadius: `${theme.borderRadius.xl} ${theme.borderRadius.xl} 0 0`,
+          color: theme.colors.text.primary
         }}>
-          <h3 style={{ margin: '0', color: '#333' }}>Alert Management</h3>
+          <h3 style={{ 
+            margin: '0', 
+            fontSize: theme.typography.sizes.xl, 
+            fontWeight: theme.typography.weights.bold 
+          }}>
+            📋 Alert Management Center
+          </h3>
         </div>
 
         <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
           {getFilteredAlerts().length === 0 ? (
             <div style={{ 
-              padding: '40px', 
+              padding: theme.spacing.xxl, 
               textAlign: 'center', 
-              color: '#666' 
+              color: theme.colors.text.secondary,
+              background: theme.colors.background.card,
+              margin: theme.spacing.lg,
+              borderRadius: theme.borderRadius.lg
             }}>
-              <p style={{ fontSize: '1.2em', margin: '0' }}>No alerts found matching your filters</p>
+              <div style={{ fontSize: '3rem', marginBottom: theme.spacing.md }}>🔍</div>
+              <p style={{ 
+                fontSize: theme.typography.sizes.lg, 
+                margin: '0', 
+                fontWeight: theme.typography.weights.semibold 
+              }}>
+                No alerts found matching your filters
+              </p>
             </div>
           ) : (
             getFilteredAlerts().map((alert) => (
               <div
                 key={alert.id}
                 style={{
-                  padding: '20px',
-                  borderBottom: '1px solid #f0f0f0',
-                  borderLeft: `4px solid ${getPriorityColor(alert.priority)}`,
-                  backgroundColor: alert.status === 'active' ? '#fff5f5' : 'white'
+                  padding: theme.spacing.lg,
+                  margin: theme.spacing.md,
+                  borderRadius: theme.borderRadius.lg,
+                  background: alert.status === 'active' 
+                    ? `linear-gradient(135deg, ${theme.colors.error[500]}15 0%, ${theme.colors.background.card} 100%)`
+                    : theme.colors.background.card,
+                  boxShadow: theme.effects.shadow.medium,
+                  border: `3px solid ${getPriorityColor(alert.priority)}`,
+                  transform: 'translateY(0)',
+                  transition: theme.animation.transition
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                  e.currentTarget.style.boxShadow = theme.effects.shadow.large;
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = theme.effects.shadow.medium;
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'flex-start', 
+                  marginBottom: theme.spacing.sm 
+                }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                      <span style={{ fontSize: '1.2em', marginRight: '8px' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      marginBottom: theme.spacing.xs 
+                    }}>
+                      <span style={{ 
+                        fontSize: theme.typography.sizes.lg, 
+                        marginRight: theme.spacing.xs 
+                      }}>
                         {getAlertIcon(alert.alert_type)}
                       </span>
-                      <h4 style={{ margin: '0', color: '#333', fontSize: '1.1em' }}>
+                      <h4 style={{ 
+                        margin: '0', 
+                        color: theme.colors.text.primary, 
+                        fontSize: theme.typography.sizes.base,
+                        fontWeight: theme.typography.weights.semibold
+                      }}>
                         {alert.title}
                       </h4>
                     </div>
                     
-                    <p style={{ margin: '5px 0', color: '#666', fontSize: '0.95em' }}>
+                    <p style={{ 
+                      margin: `${theme.spacing.xs} 0`, 
+                      color: theme.colors.text.secondary, 
+                      fontSize: theme.typography.sizes.sm 
+                    }}>
                       {alert.message}
                     </p>
                     
-                    <div style={{ display: 'flex', gap: '15px', fontSize: '0.85em', color: '#666', marginTop: '8px' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      gap: theme.spacing.md, 
+                      fontSize: theme.typography.sizes.xs, 
+                      color: theme.colors.text.secondary, 
+                      marginTop: theme.spacing.xs,
+                      flexWrap: 'wrap'
+                    }}>
                       <span><strong>Customer:</strong> {alert.customer.name}</span>
                       <span><strong>Risk:</strong> {(alert.churn_probability * 100).toFixed(1)}%</span>
                       <span><strong>Change:</strong> {alert.probability_change > 0 ? '+' : ''}{(alert.probability_change * 100).toFixed(1)}%</span>
@@ -400,31 +493,39 @@ const AlertsDashboard = () => {
                     </div>
                   </div>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'flex-end', 
+                    gap: theme.spacing.xs 
+                  }}>
                     <span style={{
-                      padding: '4px 8px',
-                      borderRadius: '12px',
-                      fontSize: '0.75em',
-                      fontWeight: 'bold',
+                      padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+                      borderRadius: theme.borderRadius.full,
+                      fontSize: theme.typography.sizes.xs,
+                      fontWeight: theme.typography.weights.bold,
                       backgroundColor: getPriorityColor(alert.priority),
-                      color: 'white'
+                      color: theme.colors.text.primary
                     }}>
                       {alert.priority.toUpperCase()}
                     </span>
                     
                     <span style={{
-                      padding: '4px 8px',
-                      borderRadius: '12px',
-                      fontSize: '0.75em',
-                      fontWeight: 'bold',
+                      padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+                      borderRadius: theme.borderRadius.full,
+                      fontSize: theme.typography.sizes.xs,
+                      fontWeight: theme.typography.weights.bold,
                       backgroundColor: getStatusColor(alert.status),
-                      color: 'white'
+                      color: theme.colors.text.primary
                     }}>
                       {alert.status.toUpperCase()}
                     </span>
                     
                     {alert.email_sent && (
-                      <span style={{ fontSize: '0.75em', color: '#28a745' }}>
+                      <span style={{ 
+                        fontSize: theme.typography.sizes.xs, 
+                        color: theme.colors.success[500] 
+                      }}>
                         ✓ Email Sent
                       </span>
                     )}
@@ -432,47 +533,40 @@ const AlertsDashboard = () => {
                 </div>
                 
                 {alert.status === 'active' && (
-                  <div style={{ marginTop: '15px', display: 'flex', gap: '10px' }}>
-                    <button style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#ffc107',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '0.85em',
-                      cursor: 'pointer'
-                    }}>
-                      Acknowledge
-                    </button>
-                    <button style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#28a745',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '0.85em',
-                      cursor: 'pointer'
-                    }}>
+                  <div style={{ 
+                    marginTop: theme.spacing.md, 
+                    display: 'flex', 
+                    gap: theme.spacing.sm,
+                    flexWrap: 'wrap'
+                  }}>
+                    <Button 
+                      variant="warning" 
+                      size="small"
+                      onClick={() => console.log('Acknowledge alert', alert.id)}
+                    >
+                      ✅ Acknowledge
+                    </Button>
+                    <Button 
+                      variant="success" 
+                      size="small"
+                      onClick={() => console.log('Resolve alert', alert.id)}
+                    >
                       Resolve
-                    </button>
-                    <button style={{
-                      padding: '6px 12px',
-                      backgroundColor: '#007bff',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      fontSize: '0.85em',
-                      cursor: 'pointer'
-                    }}>
-                      Contact Customer
-                    </button>
+                    </Button>
+                    <Button 
+                      variant="primary" 
+                      size="small"
+                      onClick={() => console.log('Contact customer', alert.customer.name)}
+                    >
+                      📞 Contact Customer
+                    </Button>
                   </div>
                 )}
               </div>
             ))
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

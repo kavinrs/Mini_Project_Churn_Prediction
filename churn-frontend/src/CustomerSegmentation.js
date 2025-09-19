@@ -39,7 +39,8 @@ const CustomerSegmentation = () => {
     1: {
       name: "Critical - High Risk, High Value",
       icon: "🚨",
-      color: "#dc3545",
+      color: "#ff6b6b",
+      gradient: "linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)",
       priority: "Critical",
       strategy: "Immediate intervention with premium retention offers",
       budgetAllocation: "High"
@@ -47,7 +48,8 @@ const CustomerSegmentation = () => {
     2: {
       name: "Selective - High Risk, Lower Value", 
       icon: "⚠️",
-      color: "#fd7e14",
+      color: "#ffa726",
+      gradient: "linear-gradient(135deg, #ffa726 0%, #ff9800 100%)",
       priority: "Medium",
       strategy: "Cost-effective retention with automated campaigns",
       budgetAllocation: "Low-Medium"
@@ -55,7 +57,8 @@ const CustomerSegmentation = () => {
     3: {
       name: "Champions - Low Risk, High Loyalty",
       icon: "👑", 
-      color: "#28a745",
+      color: "#66bb6a",
+      gradient: "linear-gradient(135deg, #66bb6a 0%, #4caf50 100%)",
       priority: "Low",
       strategy: "Reward loyalty and encourage advocacy",
       budgetAllocation: "Medium"
@@ -63,7 +66,8 @@ const CustomerSegmentation = () => {
     4: {
       name: "Growth - Stable with Potential",
       icon: "📈",
-      color: "#17a2b8", 
+      color: "#42a5f5",
+      gradient: "linear-gradient(135deg, #42a5f5 0%, #2196f3 100%)", 
       priority: "Low",
       strategy: "Nurture growth and engagement",
       budgetAllocation: "Low"
@@ -131,10 +135,33 @@ const CustomerSegmentation = () => {
   }));
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>
-        Customer Segmentation & Clustering
-      </h1>
+    <div style={{ padding: '0', fontFamily: 'Inter, system-ui, sans-serif', background: 'transparent' }}>
+      <div style={{
+        textAlign: 'center',
+        marginBottom: '40px',
+        padding: '40px',
+        background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+        borderRadius: '20px',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+        color: 'white'
+      }}>
+        <h1 style={{ 
+          margin: '0',
+          fontSize: '3rem',
+          fontWeight: '800',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+        }}>
+          🎯 Customer Segmentation Intelligence
+        </h1>
+        <p style={{
+          margin: '15px 0 0 0',
+          fontSize: '1.3rem',
+          opacity: '0.9',
+          fontWeight: '400'
+        }}>
+          Strategic customer segments with targeted retention strategies
+        </p>
+      </div>
 
       {/* Segment Overview Cards */}
       <div style={{ 

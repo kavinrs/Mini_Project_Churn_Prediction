@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
+// import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { theme } from './theme';
+import Card from './components/UI/Card';
+// import { Button } from './components/UI';/Button';
+import LoadingSpinner from './components/UI/LoadingSpinner';
+import AnimatedCard from './components/UI/AnimatedCard';
+import AnimatedButton from './components/UI/AnimatedButton';
+import ProgressBar from './components/UI/ProgressBar';
+import { showToast } from './components/UI/Toast';
 import ShapExplanation from './ShapExplanation';
 
 const ChurnForm = () => {
@@ -27,6 +37,8 @@ const ChurnForm = () => {
   const [prediction, setPrediction] = useState(null);
   const [predictionData, setPredictionData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [predictionResult, setPredictionResult] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,336 +47,390 @@ const ChurnForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setPredictionResult(null);
+    
+    const loadingToast = showToast.loading('Analyzing customer data...');
+    
     try {
       const response = await axios.post('http://localhost:8000/api/predict/', formData);
-      const rawPrediction = response.data.prediction;
-      const readablePrediction = rawPrediction === 1 ? 'Churn' : 'Not Churn';
-      setPrediction(readablePrediction);
-      setPredictionData(response.data);
-      setError(null);
-    } catch (err) {
-      console.error(err);
-      setError('Failed to get prediction. Please check your backend.');
-      setPrediction(null);
-      setPredictionData(null);
+      setPredictionResult(response.data);
+      showToast.success('Prediction completed successfully!');
+    } catch (error) {
+      console.error('Error making prediction:', error);
+      showToast.error('Error making prediction. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const formFields = [
+    { name: 'Tenure', label: 'Customer Tenure (months)', type: 'number', placeholder: 'e.g., 12' },
+    { name: 'PreferredLoginDevice', label: 'Preferred Login Device', type: 'select', options: ['Mobile Phone', 'Computer', 'Phone'] },
+    { name: 'CityTier', label: 'City Tier', type: 'select', options: ['1', '2', '3'] },
+    { name: 'WarehouseToHome', label: 'Warehouse to Home Distance (km)', type: 'number', placeholder: 'e.g., 15.5' },
+    { name: 'PreferredPaymentMode', label: 'Preferred Payment Mode', type: 'select', options: ['Debit Card', 'Credit Card', 'UPI', 'COD', 'E wallet'] },
+    { name: 'Gender', label: 'Gender', type: 'select', options: ['Male', 'Female'] },
+    { name: 'HourSpendOnApp', label: 'Hours Spent on App', type: 'number', placeholder: 'e.g., 3.5' },
+    { name: 'NumberOfDeviceRegistered', label: 'Number of Devices Registered', type: 'number', placeholder: 'e.g., 2' },
+    { name: 'PreferedOrderCat', label: 'Preferred Order Category', type: 'select', options: ['Laptop & Accessory', 'Mobile Phone', 'Others', 'Fashion', 'Grocery'] },
+    { name: 'SatisfactionScore', label: 'Satisfaction Score (1-5)', type: 'number', placeholder: 'e.g., 4' },
+    { name: 'MaritalStatus', label: 'Marital Status', type: 'select', options: ['Single', 'Married', 'Divorced'] },
+    { name: 'NumberOfAddress', label: 'Number of Addresses', type: 'number', placeholder: 'e.g., 2' },
+    { name: 'Complain', label: 'Has Complaints', type: 'select', options: ['0', '1'] },
+    { name: 'OrderAmountHikeFromlastYear', label: 'Order Amount Hike (%)', type: 'number', placeholder: 'e.g., 15.2' },
+    { name: 'CouponUsed', label: 'Coupons Used', type: 'number', placeholder: 'e.g., 5' },
+    { name: 'OrderCount', label: 'Order Count', type: 'number', placeholder: 'e.g., 8' },
+    { name: 'DaySinceLastOrder', label: 'Days Since Last Order', type: 'number', placeholder: 'e.g., 7' },
+    { name: 'CashbackAmount', label: 'Cashback Amount', type: 'number', placeholder: 'e.g., 150.75' },
+  ];
+
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto' }}>
-      <h2>Customer Churn Predictor</h2>
-      <form onSubmit={handleSubmit}>
-        {Object.keys(formData).map((key) => (
-          <div key={key} style={{ marginBottom: '10px' }}>
-            <label>{key}</label>
-            <input
-              type="text"
-              name={key}
-              value={formData[key]}
-              onChange={handleChange}
-              style={{ width: '100%', padding: '8px' }}
-              required
-            />
-          </div>
-        ))}
-        <button type="submit" style={{ padding: '10px 20px' }}>Predict Churn</button>
-      </form>
+    <div style={{ 
+      fontFamily: theme.typography.fontFamily, 
+      color: theme.colors.text.primary 
+    }}>
+      {/* Header */}
+      <AnimatedCard 
+        delay={0.1}
+        style={{
+          textAlign: 'center',
+          marginBottom: theme.spacing.xl,
+          padding: theme.spacing.xl,
+          background: theme.colors.gradients.primary,
+          color: 'white'
+        }}
+        hover={false}
+      >
+        <h2 style={{
+          margin: 0,
+          fontSize: theme.typography.fontSize['3xl'],
+          fontWeight: theme.typography.fontWeight.bold,
+          background: theme.gradients.primary,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          marginBottom: theme.spacing.sm,
+        }}>
+          AI-Powered Churn Prediction
+        </h2>
+        <p style={{
+          margin: 0,
+          fontSize: theme.typography.fontSize.lg,
+          color: theme.colors.neutral[600],
+          fontWeight: theme.typography.fontWeight.medium,
+        }}>
+          Enter customer details to predict churn probability with advanced machine learning
+        </p>
+      </AnimatedCard>
 
-      {prediction && predictionData && (
-        <div style={{ marginTop: '20px', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-          <div style={{ color: prediction === 'Churn' ? 'red' : 'green', marginBottom: '15px' }}>
-            <strong>Prediction:</strong> {prediction}
-          </div>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: predictionResult ? '1fr 1fr' : '1fr', 
+          gap: theme.spacing.xl 
+        }}
+      >
+        {/* Prediction Form */}
+        <AnimatedCard delay={0.2} style={{ padding: theme.spacing.xl }}>
+          <h3 style={{ 
+            margin: `0 0 ${theme.spacing.lg} 0`,
+            fontSize: theme.typography.sizes.xl,
+            fontWeight: theme.typography.weights.semibold,
+            color: theme.colors.text.primary
+          }}>
+            Customer Information
+          </h3>
           
-          <div style={{ marginBottom: '10px' }}>
-            <strong>Churn Probability:</strong> {(predictionData.churn_probability * 100).toFixed(2)}%
-          </div>
-
-          {predictionData.suggested_action && (
-            <div style={{ 
-              marginTop: '15px', 
-              padding: '15px', 
-              backgroundColor: '#f8f9fa', 
-              borderRadius: '5px',
-              border: `2px solid ${
-                predictionData.suggested_action.priority === 'High' ? '#dc3545' :
-                predictionData.suggested_action.priority === 'Medium' ? '#fd7e14' :
-                predictionData.suggested_action.priority === 'Low' ? '#ffc107' : '#28a745'
-              }`
+          <form onSubmit={handleSubmit}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: theme.spacing.md,
+              marginBottom: theme.spacing.xl,
             }}>
-              <h3 style={{ 
-                margin: '0 0 10px 0', 
-                color: predictionData.suggested_action.priority === 'High' ? '#dc3545' :
-                       predictionData.suggested_action.priority === 'Medium' ? '#fd7e14' :
-                       predictionData.suggested_action.priority === 'Low' ? '#e68900' : '#28a745'
-              }}>
-                Recommended Action ({predictionData.suggested_action.priority} Priority)
-              </h3>
-              
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Action:</strong> {predictionData.suggested_action.action}
-              </div>
-              
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Description:</strong> {predictionData.suggested_action.description}
-              </div>
-              
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Urgency:</strong> {predictionData.suggested_action.urgency}
-              </div>
-              
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Timeline:</strong> {predictionData.suggested_action.suggested_timeline}
-              </div>
-              
-              <div style={{ 
-                marginTop: '10px', 
-                padding: '8px', 
-                backgroundColor: '#e9ecef', 
-                borderRadius: '3px',
-                fontSize: '0.9em'
-              }}>
-                <strong>Action Type:</strong> {predictionData.suggested_action.action_type.replace('_', ' ').toUpperCase()}
-              </div>
-            </div>
-          )}
-
-          {/* Customer Segmentation Info */}
-          {predictionData && predictionData.customer_segment && (
-            <div style={{ 
-              marginTop: '15px', 
-              padding: '15px', 
-              backgroundColor: predictionData.customer_segment.color + '15', 
-              borderRadius: '5px',
-              border: `2px solid ${predictionData.customer_segment.color}`
-            }}>
-              <h3 style={{ 
-                margin: '0 0 10px 0', 
-                color: predictionData.customer_segment.color
-              }}>
-                {predictionData.customer_segment.icon} Customer Segment: {predictionData.customer_segment.segment_name}
-              </h3>
-              
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Strategy:</strong> {predictionData.customer_segment.strategy}
-              </div>
-              
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Priority:</strong> {predictionData.customer_segment.priority}
-              </div>
-              
-              <div style={{ marginBottom: '10px' }}>
-                <strong>Budget Allocation:</strong> {predictionData.customer_segment.budget_allocation}
-              </div>
-
-              {predictionData.customer_value && (
-                <div style={{ 
-                  marginTop: '10px', 
-                  padding: '8px', 
-                  backgroundColor: '#f8f9fa', 
-                  borderRadius: '3px'
-                }}>
-                  <strong>Customer Value Score:</strong> {predictionData.customer_value.value_score} 
-                  ({predictionData.customer_value.value_tier})
+              {formFields.map((field) => (
+                <div key={field.name} style={{ marginBottom: theme.spacing.sm }}>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: theme.spacing.xs,
+                    fontSize: theme.typography.sizes.sm,
+                    fontWeight: theme.typography.weights.semibold,
+                    color: theme.colors.text.secondary,
+                  }}>
+                    {field.label}
+                  </label>
+                  {field.type === 'select' ? (
+                    <select
+                      name={field.name}
+                      value={formData[field.name]}
+                      onChange={handleChange}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+                        border: `2px solid ${theme.colors.neutral[200]}`,
+                        borderRadius: theme.borderRadius.lg,
+                        fontSize: theme.typography.sizes.base,
+                        fontFamily: theme.typography.fontFamily,
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        appearance: 'none',
+                        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                        backgroundPosition: 'right 0.5rem center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: '1.5em 1.5em',
+                        paddingRight: '2.5rem',
+                      }}
+                    >
+                      <option value="">Select {field.label}</option>
+                      {field.options.map(option => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      value={formData[field.name]}
+                      onChange={handleChange}
+                      placeholder={field.placeholder}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+                        border: `2px solid ${theme.colors.neutral[200]}`,
+                        borderRadius: theme.borderRadius.lg,
+                        fontSize: theme.typography.sizes.base,
+                        fontFamily: theme.typography.fontFamily,
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      }}
+                      step={field.type === 'number' ? 'any' : undefined}
+                    />
+                  )}
                 </div>
-              )}
+              ))}
             </div>
+
+            <AnimatedButton
+              type="submit"
+              disabled={loading}
+              loading={loading}
+              variant="primary"
+              size="lg"
+              style={{
+                width: '100%',
+                marginTop: theme.spacing.lg
+              }}
+            >
+              {loading ? 'Analyzing...' : 'Predict Churn Risk'}
+            </AnimatedButton>
+          </form>
+        </AnimatedCard>
+
+        {/* Results Section */}
+        <div style={{ position: 'sticky', top: theme.spacing.lg }}>
+          {loading && (
+            <Card variant="glass" padding="xl" style={{ textAlign: 'center' }}>
+              <LoadingSpinner size="lg" color="primary" />
+              <h3 style={{
+                margin: `${theme.spacing.md} 0 ${theme.spacing.sm} 0`,
+                fontSize: theme.typography.fontSize.xl,
+                fontWeight: theme.typography.fontWeight.semibold,
+                color: theme.colors.neutral[700],
+              }}>
+                Processing Customer Data
+              </h3>
+              <p style={{
+                margin: 0,
+                color: theme.colors.neutral[500],
+                fontSize: theme.typography.fontSize.base,
+              }}>
+                Our AI model is analyzing the customer profile...
+              </p>
+            </Card>
           )}
 
-          {/* Gamified Retention Section */}
-          {predictionData && predictionData.retention_score && (
-            <div style={{ 
-              marginTop: '20px', 
-              padding: '20px', 
-              backgroundColor: '#f8f9fa', 
-              borderRadius: '8px',
-              border: '1px solid #dee2e6'
+          {error && (
+            <Card variant="glass" padding="xl" style={{
+              border: `2px solid ${theme.colors.error[300]}`,
+              background: `${theme.colors.error[50]}95`,
             }}>
-              <h3 style={{ 
-                color: '#333', 
-                marginBottom: '15px',
+              <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px'
+                gap: theme.spacing.sm,
+                marginBottom: theme.spacing.sm,
               }}>
-                🎮 Gamified Retention Score
-              </h3>
-              
-              {/* Retention Score Display */}
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '20px',
-                marginBottom: '20px'
-              }}>
-                <div style={{ 
-                  fontSize: '3em',
-                  fontWeight: 'bold',
-                  color: predictionData.retention_score.tier_color,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+                <span style={{ fontSize: theme.typography.fontSize['2xl'] }}>⚠️</span>
+                <h3 style={{
+                  margin: 0,
+                  fontSize: theme.typography.fontSize.lg,
+                  fontWeight: theme.typography.fontWeight.semibold,
+                  color: theme.colors.error[700],
                 }}>
-                  {predictionData.retention_score.retention_score}
-                </div>
-                <div>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px',
-                    marginBottom: '5px'
-                  }}>
-                    <span style={{ fontSize: '1.5em' }}>
-                      {predictionData.retention_score.tier_icon}
-                    </span>
-                    <span style={{ 
-                      fontSize: '1.2em',
-                      fontWeight: 'bold',
-                      color: predictionData.retention_score.tier_color
-                    }}>
-                      {predictionData.retention_score.score_tier} Tier
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '0.9em', color: '#666' }}>
-                    Risk Level: {predictionData.retention_score.churn_risk_level}
-                  </div>
-                </div>
+                  Prediction Error
+                </h3>
               </div>
+              <p style={{
+                margin: 0,
+                color: theme.colors.error[600],
+                fontSize: theme.typography.fontSize.base,
+              }}>
+                {error}
+              </p>
+            </Card>
+          )}
 
-              {/* Progress Bar */}
-              <div style={{ marginBottom: '20px' }}>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  marginBottom: '5px',
-                  fontSize: '0.9em',
-                  color: '#666'
+          {predictionResult && !loading && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing.lg }}>
+              {/* Main Prediction Card */}
+              <Card variant="glass" padding="xl" style={{
+                border: `2px solid ${predictionResult.churn_probability >= 0.32 ? theme.colors.error[300] : theme.colors.success[300]}`,
+                background: `${predictionResult.churn_probability >= 0.32 ? theme.colors.error[50] : theme.colors.success[50]}95`,
+              }}>
+                <div style={{
+                  textAlign: 'center',
+                  marginBottom: theme.spacing.lg,
                 }}>
-                  <span>Retention Progress</span>
-                  <span>{predictionData.retention_score.retention_score}%</span>
+                  <div style={{
+                    fontSize: '4rem',
+                    marginBottom: theme.spacing.sm,
+                  }}>
+                    {predictionResult.churn_probability >= 0.32 ? '🚨' : '✅'}
+                  </div>
+                  <h3 style={{
+                    margin: 0,
+                    fontSize: theme.typography.fontSize['2xl'],
+                    fontWeight: theme.typography.fontWeight.bold,
+                    color: predictionResult.churn_probability >= 0.32 ? theme.colors.error[700] : theme.colors.success[700],
+                    marginBottom: theme.spacing.xs,
+                  }}>
+                    {predictionResult.churn_probability >= 0.32 ? 'High Churn Risk' : 'Low Churn Risk'}
+                  </h3>
+                  <p style={{
+                    margin: 0,
+                    fontSize: theme.typography.fontSize.lg,
+                    color: theme.colors.neutral[600],
+                  }}>
+                    Churn Probability: {(predictionResult.churn_probability * 100).toFixed(1)}%
+                  </p>
                 </div>
-                <div style={{ 
-                  width: '100%', 
-                  backgroundColor: '#e9ecef', 
-                  borderRadius: '10px', 
-                  overflow: 'hidden',
-                  height: '20px'
-                }}>
-                  <div
+
+                {/* Churn Probability */}
+                <div style={{ marginBottom: theme.spacing.lg }}>
+                  <h3 style={{ 
+                    margin: `0 0 ${theme.spacing.md} 0`,
+                    fontSize: theme.typography.sizes.lg,
+                    fontWeight: theme.typography.weights.semibold
+                  }}>
+                    Churn Probability
+                  </h3>
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
                     style={{
-                      width: `${predictionData.retention_score.retention_score}%`,
-                      height: '100%',
-                      backgroundColor: predictionData.retention_score.tier_color,
-                      transition: 'width 0.3s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      fontSize: '0.8em',
-                      fontWeight: 'bold'
+                      fontSize: theme.typography.sizes['3xl'],
+                      fontWeight: theme.typography.weights.bold,
+                      color: predictionResult.churn_probability >= 0.32 
+                        ? theme.colors.error[500] 
+                        : theme.colors.success[500],
+                      textAlign: 'center',
+                      padding: theme.spacing.lg,
+                      background: predictionResult.churn_probability >= 0.32 
+                        ? `${theme.colors.error[50]}` 
+                        : `${theme.colors.success[50]}`,
+                      borderRadius: theme.borderRadius.lg,
+                      border: `2px solid ${predictionResult.churn_probability >= 0.32 
+                        ? theme.colors.error[200] 
+                        : theme.colors.success[200]}`
                     }}
                   >
-                    {predictionData.retention_score.retention_score >= 20 && `${predictionData.retention_score.retention_score}%`}
-                  </div>
+                    {(predictionResult.churn_probability * 100).toFixed(1)}%
+                  </motion.div>
+                  
+                  <ProgressBar
+                    value={predictionResult.churn_probability * 100}
+                    max={100}
+                    color={predictionResult.churn_probability >= 0.32 ? 'danger' : 'success'}
+                    size="lg"
+                    showLabel={true}
+                    label="Risk Level"
+                    style={{ marginTop: theme.spacing.md }}
+                  />
                 </div>
-              </div>
 
-              {/* Earned Badges */}
-              {predictionData.earned_badges && predictionData.earned_badges.length > 0 && (
-                <div style={{ marginBottom: '15px' }}>
-                  <h4 style={{ color: '#333', marginBottom: '10px' }}>
-                    🏅 Earned Badges ({predictionData.earned_badges.length})
-                  </h4>
-                  <div style={{ 
-                    display: 'flex', 
-                    flexWrap: 'wrap', 
-                    gap: '10px' 
+                {/* Additional Prediction Data */}
+                {predictionResult.customer_segment && (
+                  <div style={{
+                    padding: theme.spacing.md,
+                    background: 'rgba(255, 255, 255, 0.5)',
+                    borderRadius: theme.borderRadius.lg,
+                    marginBottom: theme.spacing.md,
                   }}>
-                    {predictionData.earned_badges.map((badge, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '8px 12px',
-                          backgroundColor: `${badge.color}20`,
-                          border: `2px solid ${badge.color}`,
-                          borderRadius: '20px',
-                          fontSize: '0.9em',
-                          fontWeight: 'bold'
-                        }}
-                        title={badge.description}
-                      >
-                        <span style={{ fontSize: '1.2em' }}>{badge.icon}</span>
-                        <span>{badge.name}</span>
-                        <span style={{ 
-                          fontSize: '0.8em', 
-                          color: badge.color,
-                          backgroundColor: 'white',
-                          padding: '2px 6px',
-                          borderRadius: '10px'
-                        }}>
-                          {badge.tier}
-                        </span>
-                      </div>
-                    ))}
+                    <h4 style={{
+                      margin: `0 0 ${theme.spacing.xs} 0`,
+                      fontSize: theme.typography.fontSize.base,
+                      fontWeight: theme.typography.fontWeight.semibold,
+                      color: theme.colors.neutral[700],
+                    }}>
+                      Customer Segment: {predictionData.customer_segment}
+                    </h4>
+                    <p style={{
+                      margin: 0,
+                      fontSize: theme.typography.fontSize.sm,
+                      color: theme.colors.neutral[600],
+                    }}>
+                      Value Score: {predictionData.customer_value || 'N/A'}
+                    </p>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Achievement Summary */}
-              {predictionData.gamification && (
-                <div style={{ 
-                  padding: '15px',
-                  backgroundColor: 'white',
-                  borderRadius: '8px',
-                  border: '1px solid #dee2e6'
-                }}>
-                  <h4 style={{ color: '#333', marginBottom: '10px' }}>
-                    📊 Achievement Summary
-                  </h4>
-                  <div style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
-                    gap: '15px' 
+                {predictionData.suggested_action && (
+                  <div style={{
+                    padding: theme.spacing.md,
+                    background: `${theme.colors.primary[100]}80`,
+                    borderRadius: theme.borderRadius.lg,
+                    border: `1px solid ${theme.colors.primary[200]}`,
                   }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '1.5em', fontWeight: 'bold', color: '#007bff' }}>
-                        {predictionData.gamification.total_badges}
-                      </div>
-                      <div style={{ fontSize: '0.9em', color: '#666' }}>Total Badges</div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '1.5em', fontWeight: 'bold', color: '#28a745' }}>
-                        {predictionData.gamification.achievement_level}
-                      </div>
-                      <div style={{ fontSize: '0.9em', color: '#666' }}>Current Level</div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '1.5em', fontWeight: 'bold', color: '#ffc107' }}>
-                        {predictionData.gamification.next_milestone === 'Max Level' ? '🏆' : predictionData.gamification.next_milestone}
-                      </div>
-                      <div style={{ fontSize: '0.9em', color: '#666' }}>Next Milestone</div>
-                    </div>
+                    <h4 style={{
+                      margin: `0 0 ${theme.spacing.xs} 0`,
+                      fontSize: theme.typography.fontSize.base,
+                      fontWeight: theme.typography.fontWeight.semibold,
+                      color: theme.colors.primary[700],
+                    }}>
+                      🎯 Recommended Action
+                    </h4>
+                    <p style={{
+                      margin: `0 0 ${theme.spacing.xs} 0`,
+                      fontSize: theme.typography.fontSize.sm,
+                      color: theme.colors.primary[600],
+                      fontWeight: theme.typography.fontWeight.medium,
+                    }}>
+                      {predictionData.suggested_action.action}
+                    </p>
+                    <p style={{
+                      margin: 0,
+                      fontSize: theme.typography.fontSize.xs,
+                      color: theme.colors.neutral[500],
+                    }}>
+                      Priority: {predictionData.suggested_action.priority} | Timeline: {predictionData.suggested_action.timeline}
+                    </p>
                   </div>
-                </div>
+                )}
+              </Card>
+
+              {/* SHAP Explanation */}
+              {predictionData.shap_explanation && (
+                <ShapExplanation shapData={predictionData.shap_explanation} />
               )}
             </div>
           )}
-
-          {/* SHAP Explanation Section */}
-          {predictionData && predictionData.explanations && (
-            <ShapExplanation 
-              explanations={predictionData.explanations}
-              shapValues={predictionData.shap_values}
-            />
-          )}
         </div>
-      )}
-      {error && (
-        <div style={{ marginTop: '20px', color: 'red' }}>
-          {error}
-        </div>
-      )}
+      </motion.div>
     </div>
   );
 };

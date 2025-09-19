@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { theme } from './theme';
+import Card from './components/UI/Card';
+import Button from './components/UI/Button';
+import MetricCard from './components/UI/MetricCard';
+import LoadingSpinner from './components/UI/LoadingSpinner';
 import './App.css';
 
 const RealTimeWatchlist = () => {
@@ -289,196 +294,277 @@ const RealTimeWatchlist = () => {
 
   if (loading) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <div style={{ fontSize: '18px', color: '#666' }}>Loading real-time data...</div>
+      <div style={{ 
+        padding: theme.spacing.xl, 
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: theme.spacing.lg
+      }}>
+        <LoadingSpinner size="large" />
+        <div style={{ 
+          fontSize: theme.typography.sizes.lg, 
+          color: theme.colors.text.secondary 
+        }}>
+          Loading real-time data...
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{ 
+      padding: '0', 
+      fontFamily: theme.typography.fontFamily, 
+      background: 'transparent' 
+    }}>
       {/* Header */}
-      <div style={{ marginBottom: '30px' }}>
-        <h1 style={{ color: '#333', marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-          🔍 Real-Time Watchlist
+      <Card style={{
+        textAlign: 'center',
+        marginBottom: theme.spacing.xl,
+        padding: theme.spacing.xl,
+        background: theme.colors.gradients.primary,
+        color: 'white'
+      }}>
+        <h1 style={{ 
+          margin: `0 0 ${theme.spacing.md} 0`,
+          fontSize: theme.typography.sizes['3xl'],
+          fontWeight: theme.typography.weights.bold,
+          textShadow: theme.effects.textShadow,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: theme.spacing.lg
+        }}>
+          🔍 Real-Time Watchlist Monitor
           <span style={{
-            marginLeft: '15px',
-            padding: '4px 8px',
-            borderRadius: '12px',
-            fontSize: '12px',
-            fontWeight: 'normal',
-            background: isConnected ? '#28a745' : '#dc3545',
-            color: 'white'
+            padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+            borderRadius: theme.borderRadius.lg,
+            fontSize: theme.typography.sizes.base,
+            fontWeight: theme.typography.weights.semibold,
+            background: isConnected 
+              ? theme.colors.gradients.success
+              : theme.colors.gradients.danger,
+            color: 'white',
+            boxShadow: theme.effects.shadow.lg
           }}>
             {isConnected ? '🟢 LIVE' : '🔴 OFFLINE'}
           </span>
         </h1>
-        <p style={{ color: '#666', margin: 0 }}>
-          Monitor customers with real-time anomaly detection and churn prediction alerts
+        <p style={{
+          margin: '0',
+          fontSize: theme.typography.sizes.lg,
+          opacity: '0.9',
+          fontWeight: theme.typography.weights.normal
+        }}>
+          Live monitoring of high-risk customers with instant alerts
         </p>
-      </div>
+      </Card>
 
       {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '20px', borderRadius: '12px', color: 'white' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '5px' }}>{stats.totalWatched}</div>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Total Watched</div>
-        </div>
-        <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', padding: '20px', borderRadius: '12px', color: 'white' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '5px' }}>{stats.highRisk}</div>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>High Risk</div>
-        </div>
-        <div style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', padding: '20px', borderRadius: '12px', color: 'white' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '5px' }}>{stats.mediumRisk}</div>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Medium Risk</div>
-        </div>
-        <div style={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', padding: '20px', borderRadius: '12px', color: 'white' }}>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '5px' }}>{stats.activeAlerts}</div>
-          <div style={{ fontSize: '14px', opacity: 0.9 }}>Active Alerts</div>
-        </div>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+        gap: theme.spacing.lg, 
+        marginBottom: theme.spacing.xl 
+      }}>
+        <MetricCard
+          icon="👥"
+          value={stats.totalWatched}
+          title="Total Watched"
+          color="primary"
+        />
+        <MetricCard
+          icon="🚨"
+          value={stats.highRisk}
+          title="High Risk"
+          color="error"
+        />
+        <MetricCard
+          icon="⚠️"
+          value={stats.mediumRisk}
+          title="Medium Risk"
+          color="warning"
+        />
+        <MetricCard
+          icon="🔔"
+          value={stats.activeAlerts}
+          title="Active Alerts"
+          color="info"
+        />
       </div>
 
       {/* Filter Controls */}
-      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-        <span style={{ fontWeight: 'bold', color: '#333' }}>Filter by Risk:</span>
+      <div style={{ 
+        marginBottom: theme.spacing.lg, 
+        display: 'flex', 
+        gap: theme.spacing.sm, 
+        alignItems: 'center' 
+      }}>
+        <span style={{ 
+          fontWeight: theme.typography.weights.semibold, 
+          color: theme.colors.text.primary 
+        }}>
+          Filter by Risk:
+        </span>
         {['all', 'high', 'medium', 'low'].map(level => (
-          <button
+          <Button
             key={level}
             onClick={() => setFilter(level)}
+            variant={filter === level ? 'primary' : 'secondary'}
+            size="sm"
             style={{
-              padding: '8px 16px',
-              border: 'none',
-              borderRadius: '20px',
-              background: filter === level ? '#007bff' : '#f8f9fa',
-              color: filter === level ? 'white' : '#333',
-              cursor: 'pointer',
-              textTransform: 'capitalize',
-              transition: 'all 0.2s'
+              textTransform: 'capitalize'
             }}
           >
             {level}
-          </button>
+          </Button>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '30px' }}>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '1fr 400px', 
+        gap: theme.spacing.xl 
+      }}>
         {/* Watchlist */}
         <div>
-          <h2 style={{ color: '#333', marginBottom: '20px' }}>👥 Customer Watchlist ({filteredWatchlist.length})</h2>
+          <h2 style={{ 
+            color: theme.colors.text.primary, 
+            marginBottom: theme.spacing.lg,
+            fontSize: theme.typography.sizes.xl,
+            fontWeight: theme.typography.weights.semibold
+          }}>
+            👥 Customer Watchlist ({filteredWatchlist.length})
+          </h2>
           
           {filteredWatchlist.length === 0 ? (
-            <div style={{ 
+            <Card style={{ 
               textAlign: 'center', 
-              padding: '40px', 
-              background: '#f8f9fa', 
-              borderRadius: '12px',
-              color: '#666'
+              padding: theme.spacing.xl,
+              background: theme.colors.background.secondary,
+              color: theme.colors.text.secondary
             }}>
-              <div style={{ fontSize: '48px', marginBottom: '10px' }}>🎯</div>
-              <div>No customers in watchlist</div>
-              <div style={{ fontSize: '14px', marginTop: '5px' }}>
+              <div style={{ fontSize: '48px', marginBottom: theme.spacing.sm }}>🎯</div>
+              <div style={{ fontSize: theme.typography.sizes.base }}>No customers in watchlist</div>
+              <div style={{ 
+                fontSize: theme.typography.sizes.sm, 
+                marginTop: theme.spacing.xs 
+              }}>
                 Customers will appear here when anomalies are detected
               </div>
-            </div>
+            </Card>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing.md }}>
               {filteredWatchlist.map((item, index) => (
-                <div key={index} style={{
-                  background: 'white',
+                <Card key={index} hover style={{
                   border: `2px solid ${getRiskColor(item.risk_level)}`,
-                  borderRadius: '12px',
-                  padding: '20px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  transition: 'transform 0.2s',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
-                onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
+                  padding: theme.spacing.lg
+                }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'flex-start', 
+                    marginBottom: theme.spacing.md 
+                  }}>
                     <div>
-                      <h3 style={{ margin: '0 0 5px 0', color: '#333' }}>{item.customer_name}</h3>
-                      <div style={{ fontSize: '14px', color: '#666' }}>ID: {item.customer_id}</div>
+                      <h3 style={{ 
+                        margin: `0 0 ${theme.spacing.xs} 0`, 
+                        color: theme.colors.text.primary,
+                        fontSize: theme.typography.sizes.lg,
+                        fontWeight: theme.typography.weights.semibold
+                      }}>
+                        {item.customer_name}
+                      </h3>
+                      <div style={{ 
+                        fontSize: theme.typography.sizes.sm, 
+                        color: theme.colors.text.secondary 
+                      }}>
+                        ID: {item.customer_id}
+                      </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{
-                        padding: '4px 12px',
-                        borderRadius: '20px',
+                        padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+                        borderRadius: theme.borderRadius.full,
                         background: getRiskColor(item.risk_level),
                         color: 'white',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
+                        fontSize: theme.typography.sizes.xs,
+                        fontWeight: theme.typography.weights.bold,
                         textTransform: 'uppercase',
-                        marginBottom: '5px'
+                        marginBottom: theme.spacing.xs
                       }}>
                         {item.risk_level} RISK
                       </div>
-                      <div style={{ fontSize: '12px', color: '#666' }}>
+                      <div style={{ 
+                        fontSize: theme.typography.sizes.xs, 
+                        color: theme.colors.text.secondary 
+                      }}>
                         {getTimeAgo(item.last_updated)}
                       </div>
                     </div>
                   </div>
                   
-                  <div style={{ marginBottom: '15px' }}>
-                    <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>Churn Probability</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ marginBottom: theme.spacing.md }}>
+                    <div style={{ 
+                      fontSize: theme.typography.sizes.sm, 
+                      color: theme.colors.text.secondary, 
+                      marginBottom: theme.spacing.xs 
+                    }}>
+                      Churn Probability
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing.sm }}>
                       <div style={{
                         flex: 1,
                         height: '8px',
-                        background: '#e9ecef',
-                        borderRadius: '4px',
+                        background: theme.colors.background.secondary,
+                        borderRadius: theme.borderRadius.sm,
                         overflow: 'hidden'
                       }}>
                         <div style={{
                           width: `${item.churn_probability * 100}%`,
                           height: '100%',
                           background: getRiskColor(item.risk_level),
-                          transition: 'width 0.3s'
+                          transition: theme.effects.transition.default
                         }} />
                       </div>
-                      <span style={{ fontWeight: 'bold', color: getRiskColor(item.risk_level) }}>
+                      <span style={{ 
+                        fontWeight: theme.typography.weights.bold, 
+                        color: getRiskColor(item.risk_level) 
+                      }}>
                         {(item.churn_probability * 100).toFixed(1)}%
                       </span>
                     </div>
                   </div>
                   
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <button
+                  <div style={{ display: 'flex', gap: theme.spacing.sm }}>
+                    <Button
                       onClick={() => triggerAnomalyDetection(item.customer_id)}
-                      style={{
-                        padding: '8px 16px',
-                        border: 'none',
-                        borderRadius: '6px',
-                        background: '#17a2b8',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        transition: 'background 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.background = '#138496'}
-                      onMouseLeave={(e) => e.target.style.background = '#17a2b8'}
+                      variant="info"
+                      size="sm"
+                      title="Run anomaly detection scan for this customer"
                     >
-                      🔍 Scan Now
-                    </button>
-                    <button
+                      🔍 Anomaly Scan
+                    </Button>
+                    <Button
                       onClick={() => removeFromWatchlist(item.customer_id)}
-                      style={{
-                        padding: '8px 16px',
-                        border: 'none',
-                        borderRadius: '6px',
-                        background: '#dc3545',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        transition: 'background 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.background = '#c82333'}
-                      onMouseLeave={(e) => e.target.style.background = '#dc3545'}
+                      variant="danger"
+                      size="sm"
+                      title="Remove customer from watchlist"
                     >
-                      ❌ Remove
-                    </button>
+                      ❌ Remove from List
+                    </Button>
+                    <Button
+                      onClick={() => window.open(`/customer/${item.customer_id}`, '_blank')}
+                      variant="success"
+                      size="sm"
+                      title="View detailed customer profile"
+                    >
+                      👤 View Profile
+                    </Button>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           )}
@@ -486,81 +572,101 @@ const RealTimeWatchlist = () => {
 
         {/* Live Alerts */}
         <div>
-          <h2 style={{ color: '#333', marginBottom: '20px' }}>🚨 Live Alerts ({filteredAlerts.length})</h2>
+          <h2 style={{ 
+            color: theme.colors.text.primary, 
+            marginBottom: theme.spacing.lg,
+            fontSize: theme.typography.sizes.xl,
+            fontWeight: theme.typography.weights.semibold
+          }}>
+            🚨 Live Alerts ({filteredAlerts.length})
+          </h2>
           
-          <div style={{ 
+          <Card style={{ 
             maxHeight: '600px', 
             overflowY: 'auto',
-            background: '#f8f9fa',
-            borderRadius: '12px',
-            padding: '15px'
+            background: theme.colors.background.secondary,
+            padding: theme.spacing.md
           }}>
             {filteredAlerts.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-                <div style={{ fontSize: '48px', marginBottom: '10px' }}>✅</div>
-                <div>No active alerts</div>
-                <div style={{ fontSize: '14px', marginTop: '5px' }}>
+              <div style={{ 
+                textAlign: 'center', 
+                padding: theme.spacing.xl, 
+                color: theme.colors.text.secondary 
+              }}>
+                <div style={{ 
+                  fontSize: '48px', 
+                  marginBottom: theme.spacing.sm 
+                }}>✅</div>
+                <div style={{ fontSize: theme.typography.sizes.base }}>No active alerts</div>
+                <div style={{ 
+                  fontSize: theme.typography.sizes.sm, 
+                  marginTop: theme.spacing.xs 
+                }}>
                   All systems running smoothly
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing.sm }}>
                 {filteredAlerts.map((alert, index) => (
-                  <div key={index} style={{
-                    background: 'white',
+                  <Card key={index} style={{
                     borderLeft: `4px solid ${getSeverityColor(alert.severity)}`,
-                    borderRadius: '8px',
-                    padding: '15px',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                    padding: theme.spacing.md
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'flex-start', 
+                      marginBottom: theme.spacing.sm 
+                    }}>
                       <div>
-                        <div style={{ fontWeight: 'bold', color: '#333', marginBottom: '2px' }}>
+                        <div style={{ 
+                          fontWeight: theme.typography.weights.semibold, 
+                          color: theme.colors.text.primary, 
+                          marginBottom: theme.spacing.xs,
+                          fontSize: theme.typography.sizes.base
+                        }}>
                           {alert.customer_name}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>
+                        <div style={{ 
+                          fontSize: theme.typography.sizes.xs, 
+                          color: theme.colors.text.secondary 
+                        }}>
                           {getTimeAgo(alert.detected_at)}
                         </div>
                       </div>
                       <div style={{
-                        padding: '2px 8px',
-                        borderRadius: '12px',
+                        padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+                        borderRadius: theme.borderRadius.lg,
                         background: getSeverityColor(alert.severity),
                         color: 'white',
-                        fontSize: '10px',
-                        fontWeight: 'bold',
+                        fontSize: theme.typography.sizes.xs,
+                        fontWeight: theme.typography.weights.bold,
                         textTransform: 'uppercase'
                       }}>
                         {alert.severity}
                       </div>
                     </div>
                     
-                    <div style={{ fontSize: '14px', color: '#555', marginBottom: '10px' }}>
+                    <div style={{ 
+                      fontSize: theme.typography.sizes.sm, 
+                      color: theme.colors.text.primary, 
+                      marginBottom: theme.spacing.sm 
+                    }}>
                       {alert.description}
                     </div>
                     
-                    <button
+                    <Button
                       onClick={() => resolveAlert(alert.id)}
-                      style={{
-                        padding: '6px 12px',
-                        border: 'none',
-                        borderRadius: '4px',
-                        background: '#28a745',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        transition: 'background 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.target.style.background = '#218838'}
-                      onMouseLeave={(e) => e.target.style.background = '#28a745'}
+                      variant="success"
+                      size="sm"
                     >
                       ✓ Resolve
-                    </button>
-                  </div>
+                    </Button>
+                  </Card>
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </div>
       </div>
 
