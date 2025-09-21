@@ -148,18 +148,26 @@ const ChurnForm = () => {
           <form onSubmit={handleSubmit}>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: theme.spacing.md,
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: theme.spacing.lg,
               marginBottom: theme.spacing.xl,
             }}>
               {formFields.map((field) => (
-                <div key={field.name} style={{ marginBottom: theme.spacing.sm }}>
+                <div key={field.name} style={{ 
+                  marginBottom: theme.spacing.md,
+                  minHeight: '80px',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
                   <label style={{
                     display: 'block',
-                    marginBottom: theme.spacing.xs,
+                    marginBottom: theme.spacing.sm,
                     fontSize: theme.typography.sizes.sm,
                     fontWeight: theme.typography.weights.semibold,
                     color: theme.colors.text.secondary,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                   }}>
                     {field.label}
                   </label>
@@ -171,6 +179,7 @@ const ChurnForm = () => {
                       required
                       style={{
                         width: '100%',
+                        minHeight: '44px',
                         padding: `${theme.spacing.sm} ${theme.spacing.md}`,
                         border: `2px solid ${theme.colors.neutral[200]}`,
                         borderRadius: theme.borderRadius.lg,
@@ -183,6 +192,8 @@ const ChurnForm = () => {
                         backgroundRepeat: 'no-repeat',
                         backgroundSize: '1.5em 1.5em',
                         paddingRight: '2.5rem',
+                        boxSizing: 'border-box',
+                        flex: '1'
                       }}
                     >
                       <option value="">Select {field.label}</option>
@@ -200,12 +211,15 @@ const ChurnForm = () => {
                       required
                       style={{
                         width: '100%',
+                        minHeight: '44px',
                         padding: `${theme.spacing.sm} ${theme.spacing.md}`,
                         border: `2px solid ${theme.colors.neutral[200]}`,
                         borderRadius: theme.borderRadius.lg,
                         fontSize: theme.typography.sizes.base,
                         fontFamily: theme.typography.fontFamily,
                         backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        boxSizing: 'border-box',
+                        flex: '1'
                       }}
                       step={field.type === 'number' ? 'any' : undefined}
                     />
@@ -377,19 +391,19 @@ const ChurnForm = () => {
                       fontWeight: theme.typography.fontWeight.semibold,
                       color: theme.colors.neutral[700],
                     }}>
-                      Customer Segment: {predictionData.customer_segment}
+                      Customer Segment: {predictionResult.customer_segment.segment_name || predictionResult.customer_segment}
                     </h4>
                     <p style={{
                       margin: 0,
                       fontSize: theme.typography.fontSize.sm,
                       color: theme.colors.neutral[600],
                     }}>
-                      Value Score: {predictionData.customer_value || 'N/A'}
+                      Value Score: {predictionResult.customer_value?.value_score || predictionResult.customer_value || 'N/A'}
                     </p>
                   </div>
                 )}
 
-                {predictionData.suggested_action && (
+                {predictionResult.suggested_action && (
                   <div style={{
                     padding: theme.spacing.md,
                     background: `${theme.colors.primary[100]}80`,
@@ -410,22 +424,22 @@ const ChurnForm = () => {
                       color: theme.colors.primary[600],
                       fontWeight: theme.typography.fontWeight.medium,
                     }}>
-                      {predictionData.suggested_action.action}
+                      {predictionResult.suggested_action.action}
                     </p>
                     <p style={{
                       margin: 0,
                       fontSize: theme.typography.fontSize.xs,
                       color: theme.colors.neutral[500],
                     }}>
-                      Priority: {predictionData.suggested_action.priority} | Timeline: {predictionData.suggested_action.timeline}
+                      Priority: {predictionResult.suggested_action.priority} | Timeline: {predictionResult.suggested_action.timeline}
                     </p>
                   </div>
                 )}
               </Card>
 
               {/* SHAP Explanation */}
-              {predictionData.shap_explanation && (
-                <ShapExplanation shapData={predictionData.shap_explanation} />
+              {predictionResult.shap_explanation && (
+                <ShapExplanation shapData={predictionResult.shap_explanation} />
               )}
             </div>
           )}

@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta
 import random
-from churnapp.models import Customer, CustomerEvent, CustomerBehaviorBaseline
+from churnapp.models import Customer, CustomerEvent, CustomerBehaviorBaseline, RealTimeWatchlist, AnomalyAlert
 # Temporarily disabled for migrations
 # from churnapp.tasks import process_customer_event
 
@@ -155,12 +155,56 @@ class Command(BaseCommand):
         
         self.stdout.write(f'Created {anomalous_events} anomalous test events')
         
+        # Create sample watchlist entries
+        self.stdout.write('Creating watchlist entries...')
+        high_risk_customers = [c for c in customers if c.current_churn_probability >= 0.6]
+        watchlist_entries = 0
+        
+        for customer in high_risk_customers[:8]:  # Add top 8 high-risk customers to watchlist
+            RealTimeWatchlist.objects.create(
+                customer=customer,
+                reason=f"High churn probability: {customer.current_churn_probability:.1%}",
+                priority=random.choice(['high', 'critical', 'medium']),
+                check_frequency_minutes=random.choice([5, 10, 15]),
+                alert_threshold=random.uniform(0.6, 0.9)
+            )
+            watchlist_entries += 1
+        
+        self.stdout.write(f'Created {watchlist_entries} watchlist entries')
+        
+        # Create sample anomaly alerts
+        self.stdout.write('Creating anomaly alerts...')
+        alert_types = ['login_drop', 'purchase_drop', 'session_anomaly', 'payment_issues', 'support_spike', 'engagement_drop']
+        severities = ['low', 'medium', 'high', 'critical']
+        alerts_created = 0
+        
+        for customer in random.sample(customers, min(10, len(customers))):
+            alert_type = random.choice(alert_types)
+            severity = random.choice(severities)
+            
+            AnomalyAlert.objects.create(
+                customer=customer,
+                alert_type=alert_type,
+                severity=severity,
+                status=random.choice(['new', 'acknowledged', 'investigating']),
+                description=f"Detected {alert_type.replace('_', ' ')} anomaly for {customer.name}",
+                anomaly_score=random.uniform(-0.8, -0.1),  # Isolation Forest scores are negative
+                baseline_value=random.uniform(1.0, 10.0),
+                current_value=random.uniform(0.1, 2.0),
+                detected_at=timezone.now() - timedelta(hours=random.randint(1, 48))
+            )
+            alerts_created += 1
+        
+        self.stdout.write(f'Created {alerts_created} anomaly alerts')
+        
         self.stdout.write(
             self.style.SUCCESS(
                 f'Successfully populated sample data:\n'
                 f'- {len(customers)} customers\n'
                 f'- {total_events} historical events\n'
                 f'- {baselines_created} customer baselines\n'
-                f'- {anomalous_events} anomalous test events'
+                f'- {anomalous_events} anomalous test events\n'
+                f'- {watchlist_entries} watchlist entries\n'
+                f'- {alerts_created} anomaly alerts'
             )
         )

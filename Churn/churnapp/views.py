@@ -127,7 +127,7 @@ def get_anomaly_alerts(request):
                 'baseline_value': alert.baseline_value,
                 'current_value': alert.current_value,
                 'detected_at': alert.detected_at.isoformat(),
-                'is_resolved': alert.is_resolved
+                'is_resolved': alert.status == 'resolved'
             })
         
         return Response({
@@ -156,19 +156,29 @@ def get_watchlist(request):
         if active_only:
             queryset = queryset.filter(is_active=True)
         
-        watchlist_entries = queryset.order_by('-last_updated')[:limit]
+        watchlist_entries = queryset.order_by('-added_at')[:limit]
         
         watchlist_data = []
         for entry in watchlist_entries:
+            # Calculate risk level based on customer's current churn probability
+            churn_prob = entry.customer.current_churn_probability
+            if churn_prob >= 0.8:
+                risk_level = 'high'
+            elif churn_prob >= 0.5:
+                risk_level = 'medium'
+            else:
+                risk_level = 'low'
+                
             watchlist_data.append({
                 'id': entry.id,
                 'customer_id': entry.customer.id,
                 'customer_name': entry.customer.name,
-                'churn_probability': entry.churn_probability,
-                'risk_level': entry.risk_level,
-                'anomaly_context': entry.anomaly_context,
+                'churn_probability': churn_prob,
+                'risk_level': risk_level,
+                'reason': entry.reason,
+                'priority': entry.priority,
                 'added_at': entry.added_at.isoformat(),
-                'last_updated': entry.last_updated.isoformat(),
+                'last_updated': entry.customer.last_prediction_update.isoformat() if entry.customer.last_prediction_update else entry.added_at.isoformat(),
                 'is_active': entry.is_active
             })
         
@@ -246,7 +256,7 @@ def resolve_alert(request):
         
         try:
             alert = AnomalyAlert.objects.get(id=alert_id)
-            alert.is_resolved = True
+            alert.status = 'resolved'
             alert.resolved_at = timezone.now()
             alert.save()
             
@@ -326,7 +336,7 @@ def get_customer_behavior(request, customer_id):
                 'description': alert.description,
                 'anomaly_score': alert.anomaly_score,
                 'detected_at': alert.detected_at.isoformat(),
-                'is_resolved': alert.is_resolved
+                'is_resolved': alert.status == 'resolved'
             })
         
         return Response({
