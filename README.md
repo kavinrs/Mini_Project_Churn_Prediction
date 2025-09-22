@@ -247,3 +247,14 @@ python manage.py collectstatic
 docker-compose up -d
 ```
 
+<<<<<<< HEAD
+=======
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+>>>>>>> da126121f67c3c81a2bf9d066b95855634ef0453
